@@ -22,6 +22,7 @@ public class YM2612 {
     public static final int LFO_REG = 0x22;//LFO Register Location
     
     private final int[] registers = new int[1000];//TODO: make correct size
+    private int data = 0; // Output of chip
     
     public void writeRegister(int register, int data) {
         data = data & 0xFF;//Truncate to 8 bits
@@ -30,6 +31,14 @@ public class YM2612 {
     
     public int readRegister(int register) {
         return registers[register] & 0xFF;
+    }
+
+    public void cycle() {
+        data = (data + 1) & (0xFF);
+    }
+
+    public int read() {
+        return data;
     }
     
 }
