@@ -18,6 +18,7 @@
 package net.saga.console.music.sound_learnings;
 
 import net.saga.console.music.sound_learnings.chip.YM2612;
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
@@ -50,10 +51,24 @@ public class E02_LFOTest {
     @Test
     public void testFrequencies() {
         YM2612 chip = new YM2612();
-        chip.writeRegister(YM2612.LFO_REG, 0x1000);
-        chip.cycle();//Simulate one pulse of the clock;  The clock runs at 7.67 
-        chip.read();//Read the 8-bit data line;
-        throw new RuntimeException("Not implemented");
+        chip.writeRegister(YM2612.LFO_REG, 0b1000);
+        int passZeroCount = 0;
+        int result = -1;
+        for (int i = 0; i < 7670000; i++) {
+            chip.cycle();//Simulate one pulse of the clock;  The clock runs at 7.67 mHz?
+            int newResult = chip.readLFO();
+            if (result != newResult) {
+                result = newResult;
+                if (result == 0) {
+                    passZeroCount++;
+                }
+                
+            }
+        }
+        
+        Assert.assertEquals(8, passZeroCount); // Should pass 0 8 times because you get less than 4 full waves. (The first wave starts at 0 which gives it an extra)
+        
+        
     }
 
 }
