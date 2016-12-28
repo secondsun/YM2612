@@ -54,8 +54,8 @@ public class E02_LFOTest {
         chip.writeRegister(YM2612.LFO_REG, 0b1000);
         int passZeroCount = 0;
         int result = -1;
-        for (int i = 0; i < 7670000; i++) {
-            chip.cycle();//Simulate one pulse of the clock;  The clock runs at 7.67 mHz?
+        for (int i = 0; i < 44100; i++) {
+            chip.nextSample();//Simulate one pulse of the clock;  The clock runs at 7.67 mHz?
             int newResult = chip.readLFO();
             if (result != newResult) {
                 result = newResult;

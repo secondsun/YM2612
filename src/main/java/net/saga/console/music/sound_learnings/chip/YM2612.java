@@ -27,7 +27,7 @@ public class YM2612 {
     private final int[] registers = new int[1000];//TODO: make correct size
     private int data = 0; // Output of chip
 
-    private final int clockRate = 7670000; //7.67 MhZ
+    private final int clockRate = 44100; //7.67 MhZ
     private final int sampleRate = 44100; // 44.1khz
     private LFO lfo = new LFO();
 
@@ -44,6 +44,11 @@ public class YM2612 {
         lfo.advance();
     }
 
+    public void nextSample() {
+        cycle();
+    }
+
+    
     public int read() {
         return 0;
     }
@@ -75,6 +80,9 @@ public class YM2612 {
 
         int advance() {
             updateFromRegister();
+            if (!enabled) {
+                return 0;
+            }
             masterClockCounter++;
             if (masterClockCounter > clockRate) { // Just handling overflows
                 masterClockCounter-=clockRate;    // -= instead of 0 because I think there may be weird off by ones
@@ -87,7 +95,7 @@ public class YM2612 {
             int newReg = readRegister(LFO_REG);
             if (newReg != oldRegister) { //Register has changed, update
                 oldRegister = newReg;
-                enabled = (oldRegister & 0x1000) > 0;
+                enabled = (oldRegister & 0b1000) > 0;
                 masterClockCounter = 0;
                 radiansPerClock = radians.multiply(BigDecimal.valueOf(frequencyValues[oldRegister & 0b0111]).divide(BigDecimal.valueOf(clockRate), 8, RoundingMode.HALF_UP));
             }
